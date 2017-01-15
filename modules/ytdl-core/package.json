@@ -1,0 +1,99 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "ytdl-core",
+        "scope": null,
+        "escapedName": "ytdl-core",
+        "name": "ytdl-core",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "E:\\DiscordBOT\\DarenBot"
+    ]
+  ],
+  "_from": "ytdl-core@latest",
+  "_id": "ytdl-core@0.7.21",
+  "_inCache": true,
+  "_location": "/ytdl-core",
+  "_nodeVersion": "7.3.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/ytdl-core-0.7.21.tgz_1482417754564_0.009436985943466425"
+  },
+  "_npmUser": {
+    "name": "fent",
+    "email": "roly426@gmail.com"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "ytdl-core",
+    "scope": null,
+    "escapedName": "ytdl-core",
+    "name": "ytdl-core",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/ytdl-core/-/ytdl-core-0.7.21.tgz",
+  "_shasum": "f0a69b08d4232c5f54e8bf28d31b5573a0ca734b",
+  "_shrinkwrap": null,
+  "_spec": "ytdl-core",
+  "_where": "E:\\DiscordBOT\\DarenBot",
+  "author": {
+    "name": "Roly Fentanes",
+    "url": "https://github.com/fent"
+  },
+  "bugs": {
+    "url": "https://github.com/fent/node-ytdl-core/issues"
+  },
+  "dependencies": {
+    "html-entities": "^1.1.3",
+    "sax": "^1.1.3"
+  },
+  "description": "Youtube video downloader in pure javascript.",
+  "devDependencies": {
+    "assert-diff": "^1.0.1",
+    "istanbul": "*",
+    "mocha": "*",
+    "nock": "*",
+    "stream-equal": "~0.1.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "f0a69b08d4232c5f54e8bf28d31b5573a0ca734b",
+    "tarball": "https://registry.npmjs.org/ytdl-core/-/ytdl-core-0.7.21.tgz"
+  },
+  "gitHead": "ccdda3248bdfbd53e2dbbfc4d4e493afc807d855",
+  "homepage": "https://github.com/fent/node-ytdl-core#readme",
+  "keywords": [
+    "youtube",
+    "video",
+    "download"
+  ],
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "maintainers": [
+    {
+      "name": "fent",
+      "email": "roly426@gmail.com"
+    }
+  ],
+  "name": "ytdl-core",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fent/node-ytdl-core.git"
+  },
+  "scripts": {
+    "test": "istanbul cover node_modules/.bin/_mocha -- -t 16000 test/*-test.js"
+  },
+  "version": "0.7.21"
+}

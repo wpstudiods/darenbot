@@ -1,0 +1,92 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "discord.js-music",
+        "scope": null,
+        "escapedName": "discord.js-music",
+        "name": "discord.js-music",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "E:\\DiscordBOT\\DarenBot"
+    ]
+  ],
+  "_from": "discord.js-music@latest",
+  "_id": "discord.js-music@1.0.3",
+  "_inCache": true,
+  "_location": "/discord.js-music",
+  "_nodeVersion": "6.3.1",
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/discord.js-music-1.0.3.tgz_1472433777029_0.3045163352508098"
+  },
+  "_npmUser": {
+    "name": "ruiqimao",
+    "email": "ruiqim@gmail.com"
+  },
+  "_npmVersion": "3.10.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "discord.js-music",
+    "scope": null,
+    "escapedName": "discord.js-music",
+    "name": "discord.js-music",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/discord.js-music/-/discord.js-music-1.0.3.tgz",
+  "_shasum": "cde974d553784ec9bae67babe7b38cbba8d4ff5d",
+  "_shrinkwrap": null,
+  "_spec": "discord.js-music",
+  "_where": "E:\\DiscordBOT\\DarenBot",
+  "author": {
+    "name": "Ruiqi Mao"
+  },
+  "bugs": {
+    "url": "https://github.com/ruiqimao/discord.js-music/issues"
+  },
+  "dependencies": {
+    "youtube-dl": "^1.11.1"
+  },
+  "description": "Music plugin for discord.js bots",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "cde974d553784ec9bae67babe7b38cbba8d4ff5d",
+    "tarball": "https://registry.npmjs.org/discord.js-music/-/discord.js-music-1.0.3.tgz"
+  },
+  "gitHead": "8f97920e6d318447788c6f72565dd9cb31558d66",
+  "homepage": "https://github.com/ruiqimao/discord.js-music#readme",
+  "keywords": [
+    "discord",
+    "discord.js",
+    "music",
+    "bot",
+    "plugin"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "ruiqimao",
+      "email": "ruiqim@gmail.com"
+    }
+  ],
+  "name": "discord.js-music",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruiqimao/discord.js-music.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.3"
+}
