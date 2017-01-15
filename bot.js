@@ -49,7 +49,7 @@ message.channel.sendMessage("", {embed: {
     },
     {
       name: 'Пидр',
-      value: 'Без комментариев'
+      value: 'Без комментариев' 
     },
     {
       name: 'Музыка',
