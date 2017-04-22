@@ -22,5 +22,5 @@
 # Автор 
 ### WPSTUDIO - Данила Степовой
 ### Email для связи: wpstudiodev@yahoo.com
-### VK :https://vk.com/ytwpgame
+### VK: https://vk.com/ytwpgame
 
