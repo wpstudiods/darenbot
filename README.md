@@ -20,7 +20,7 @@
 ---
 
 # Автор 
-[WPSTUDIO - Данила Степовой]
-[Email для связи: wpstudiodev@yahoo.com]
-[VK :https://vk.com/ytwpgame]
+### [WPSTUDIO - Данила Степовой]
+### [Email для связи: wpstudiodev@yahoo.com]
+### [VK :https://vk.com/ytwpgame]
 
