@@ -7,9 +7,14 @@
 # Модули и прочее
 Написан он на JS, используя [discord.js](https://discord.js.org/)
 Плагины: 
-ytdl-core https://github.com/fent/node-ytdl-core
-youtube-dll https://github.com/rg3/youtube-dl
-discord.js-music https://github.com/bdistin/OhGodMusicBot
-streamfy https://github.com/nfroidure/gulp-streamify
+[ytdl-core](https://github.com/fent/node-ytdl-core)
+[youtube-dll](https://github.com/rg3/youtube-dl)
+[discord.js-music](https://github.com/bdistin/OhGodMusicBot)
+[streamfy](https://github.com/nfroidure/gulp-streamify)
 ---
-Автор - WPSTUDIO
+
+# Автор 
+[WPSTUDIO - Данила Степовой]
+[Email для связи: wpstudiodev@yahoo.com]
+[VK :https://vk.com/ytwpgame]
+
