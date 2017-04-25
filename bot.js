@@ -415,4 +415,4 @@ client.on('message', message => {
 
 
 // --------------------------------------------------------------
-client.login('MjY4NjY1MzY1NzQxOTYxMjE3.C1eHUg.bl6dXC6g5was8qmAcQF_qAEMGF0');
+client.login('ваш индификатор');
