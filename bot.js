@@ -5,6 +5,7 @@ const yt = require('ytdl-core');
 const weather = require("./weather.js")
 const mute = require("./mute.js")
 
+
 client.on('ready', () => {
   client.user.setGame('!СИГА-КАРАСЬ!');
 }); 
@@ -20,11 +21,16 @@ client.on("guildMemberAdd", member => {
     } 
 });
 client.on('ready',  () => {
-    console.log('DAREN BOT v0.10 Alpha by WPSTUDIO ');
+    console.log('DAREN BOT v1.0 by WPSTUDIO ');
     console.log('Bot is ready');
 });
 
 client.on('message', message => {
+  if(message.content === 'xxx') {
+message.channel.send({embed:{image: {url:'http://i.imgur.com/btdeuT6.jpg' || message.channel.send({embed:{image: {url:'https://media.giphy.com/media/3ohzdXx1wr5GYfQxUs/giphy.gif'}}})}}});
+
+  }
+
 if(message.author.id == 'WPSTUDIO#7316'){
     message.reply('Сига Карась!')
 }
@@ -121,6 +127,10 @@ message.channel.sendMessage("", {embed: {
   title: 'Команды и их описание ',
   description: 'Здесь будет описано все команды бота, которые используются на данный момент.',
   fields: [
+     {
+      name: 'xxx',
+      value: '18+ Кидает пикчи Дани))) '
+    },
     {
       name: 'Весьма странные команды:',
       value: '"Я", "Педр!"'
@@ -402,6 +412,7 @@ client.on('message', message => {
 
   // ------------------------------------------------------------------
   // Здесь тестовый функционал
+
 
 // --------------------------------------------------------------
 client.login('MjY4NjY1MzY1NzQxOTYxMjE3.C1eHUg.bl6dXC6g5was8qmAcQF_qAEMGF0');
