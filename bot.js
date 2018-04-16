@@ -1,58 +1,82 @@
+// Модули
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const config = require("./config.json")
+const config = require("./config.json");
 const yt = require('ytdl-core');
-const weather = require("./weather.js")
-const mute = require("./mute.js")
+const weather = require("./weather.js");
+const mute = require("./mute.js");
+const translateClient = require('@google-cloud/translate');
+const fs = require('fs');
 
+// Для логов в терминале
+client.on('ready',  () => {
+  console.log('DarenbotNightly');
+  console.log('Loading discord.js');
+  console.log('Loading modules');
+  console.log('Done. Bot is online!');
+  console.log('Github: https://github.com/wpstudiods/darenbot');
+console.log('Copyright 2018');
+});
 
+// Статус Бота (По умолчанию юзает Твич)
 client.on('ready', () => {
-  client.user.setGame('!СИГА-КАРАСЬ!');
+  client.user.setGame('4K 60 FPS ТОЛЬКО У МЕНЯ' , 'https://www.twitch.tv/TheDaren666');
 }); 
 
-// Приветствие нового пользователя в конфе
-client.on("guildMemberAdd", member => {
-    let guild = member.guild;  
-    if(guild.id === "289069234967805954") {
-        member.addRole("289069234967805954");
-   guild.defaultChannel.sendMessage
-      (`Добро пожаловать к нам в канал Дарена, ${member.user.username} ознакомся с правилами чата в команде
-    "rules", также, если хочешь использовать бота по полной, то читай команды в "help".`);
-    } 
+// Направляющие (Те, которые получают инфу из файла)
+   const Help = fs.readFileSync('./Doc/Help.txt', 'utf8');
+
+  // Приветствие нового пользователя в конфе + Добавление роли
+client.on('guildMemberAdd', member => {
+  console.log('Пользователь ' + member.user.username + ' Присоединился в конфу!')
+  var role = member.guild.roles.find('name', 'Участники') // "Участники" - Название вашей роли
+  member.addRole(role)
+
+// Оповещение о новом пользователе на канал
+  member.guild.channels.get('319830140232269825').send('**' + member.user.username + '**, присоединился в конфу!') 
 });
-client.on('ready',  () => {
-    console.log('DAREN BOT v1.0 by WPSTUDIO ');
-    console.log('Bot is ready');
+// Оповещение после выхода пользователя из конфы
+client.on('guildMemberRemove', member => {
+  console.log('Пользователь ' + member.user.username + ' ливнул с конфы!')
+  member.guild.channels.get('319830140232269825').send('**' + member.user.username + '**, ливнул от нас!')
 });
 
+// Помощь в командах
 client.on('message', message => {
-  if(message.content === 'xxx') {
-message.channel.send({embed:{image: {url:'http://i.imgur.com/btdeuT6.jpg' || message.channel.send({embed:{image: {url:'https://media.giphy.com/media/3ohzdXx1wr5GYfQxUs/giphy.gif'}}})}}});
+  if(message.content === 'Dhelp') {
+    message.channel.sendMessage(Help)
+  }
+});
+// Команды
+client.on('message', message => {
+  if(message.content === 'Dxxx') {
+message.channel.sendMessage(' **' + message.author.username + '**, я весь твой :kissing_heart:  ');
+message.channel.send({embed:{image: {url:'http://savepic.ru/13722904.gif'}}});
 
   }
 
 if(message.author.id == 'WPSTUDIO#7316'){
     message.reply('Сига Карась!')
 }
-if(message.content === 'Выебать') {
+if(message.content === 'DВыебать') {
         message.channel.sendMessage('Пользователь, под ником - **' + message.author.username + '** успешно выебан!' );
 
 }
 if(message.content === 'Event') {
-message.channel.sendMessage('Сига');
+message.channel.sendMessage('#SugarTV#4512');
 message.channel.sendMessage('карась' );
-
+message.channel.sendMessage('и ГЕЙ' );
 
 
 }
-if(message.content === 'Я') {
+if(message.content === 'DЯ') {
         message.channel.sendMessage('Головка от твоего хуя ,' + message.author.username + ' :smile:' );
 
 }
-if(message.content === 'Циган') {
+if(message.content === 'DЦиган') {
         message.channel.sendMessage('Какой циган?! :Tsigan: :Tsigan: :Tsigan: '  );
 }
-if(message.content === 'Педр!') {
+if(message.content === 'DПедр!') {
         message.channel.sendMessage('А ты - **'+ message.author.username + '** пидрила :laughing: !'  );
 } 
 if(message.content === 'Добрый вечер!') {
@@ -61,183 +85,35 @@ if(message.content === 'Добрый вечер!') {
 if(message.content === 'Доброе утро!') {
         message.channel.sendMessage('Доброе,**'+ message.author.username + '**!');
 }
-if (message.content === 'ping') {
+if (message.content === 'Dping') {
         message.channel.sendMessage(`pong`);
 }
-if (message.content === 'Пинг') {
+if (message.content === 'DpingS') {
         message.channel.sendMessage(`А вот и инфа о пинге сервера: \`${Date.now() - message.createdTimestamp} ms\``);
 }
     if(message.content === 'Привет') {
         message.channel.sendMessage('Привет,**'+ message.author.username + '**!');
 }
-    if(message.content === "daren") {
+    if(message.content === "Dlinks") {
         message.channel.sendMessage('вот моя страница в VK: https://vk.com/id_666_97 , также есть моя группа: https://vk.com/thedarenyoutube , а ещё я обитаю в Трубе: https://www.youtube.com/user/danil9241')
 }
 
-    if(message.content === "author") {
-        message.channel.sendMessage('Создатель бота - @WPSTUDIO. Исходники - https://github.com/wpstudiods/darenbot | v.0.03')
+    if(message.content === "Dabout") {
+        message.channel.sendMessage('Создатель бота - @WPSTUDIO. Исходники - https://github.com/wpstudiods/darenbot | v.1.0')
 }
 
-    if(message.content === "Пидр")
+    if(message.content === "Dпидр")
     message.channel.sendMessage('Сам ты пидр. :D')
   });
 
 
+
+
+
+
+//Правила конфы
 client.on('message', message => {
-    if(message.content === "Инфа")
-      message.channel.sendMessage("", {embed: {
-          color: 3447003,
-          author: {
-            name: 'DarenBot Alpha V0.05',
-            icon_url: client.user.avatarURL
-          },
-          title: 'Status:',
-          fields: [
-            {
-              name: 'Время включения бота /Версия Discord,js:',
-              value: '' + client.uptime + '/ 11.0.0'
-            },
-            {
-              name: 'Гилдии:',
-              value: '' + client.guilds +''
-            },
-            {
-              name: 'Каналы:',
-              value: '' + client.channels + ''
-            },
-            {
-              name: 'Моих фанатов:',
-              value: '' + client.users + ''
-            }
-          ],
-          timestamp: new Date(),
-          footer: {
-            icon_url: client.user.avatarURL,
-            text: '© - ̗̀- ̗̀WPSTUDIO ̖́-'
-          }
-        }
-      });
-});
-client.on('message', message => {
-    if(message.content === "help")
-message.channel.sendMessage("", {embed: {
-  color: 3447003,
-  author: {
-  },
-  title: 'Команды и их описание ',
-  description: 'Здесь будет описано все команды бота, которые используются на данный момент.',
-  fields: [
-     {
-      name: 'xxx',
-      value: '18+ Кидает пикчи Дани))) '
-    },
-    {
-      name: 'Весьма странные команды:',
-      value: '"Я", "Педр!"'
-    },
-    {
-      name: 'Привет',
-      value: 'Вам скажет "Привет".'
-    },
-    {
-     name: 'ping',
-      value: 'pong xD'
-
-
-    },
-    {
-      name: 'Daren',
-      value: 'Здесь буду ссылки на ресурсы, где можно найти самого Дарена'
-    },
-    {
-      name: 'author',
-      value: 'Здесь вы узнаете об авторе бота.'
-    },
-    {
-      name: 'Инфа',
-      value: '[BUGS] Показывает информацию бота на сервере'
-    },
-    {
-      name: 'Пинг',
-      value: 'Смотрит пинг сервера'
-    },
-    {
-      name: 'Пидр',
-      value: 'Без комментариев'
-    },
-    {
-      name: 'Музыка ',
-      value: 'Сейчас будут перечислены команды, с помощью которых вы можете воспроизвести трек в голосовой канал.',
-      },
-      {
-      name: '1',
-      value: 'monstercat - Включает радио  Monestercat'
-     },
-    {
-     name: '2',
-      value: 'tobiking - Включает трек Тоби Кинга'
-     },
-    {
-      name: '3',
-      value: 'macintosh - Включает треки Macintosh Plus'
-     },
-    {
-     name: '4',
-      value: 'giveplay - Включает Рики Эстли'
-     },
-    {
-     name: '5',
-      value: 'Дружков - Включает трек про Дружкова'
-     },
-    {
-      name: '6',
-      value: 'Дарен - Включает последнее видео Дарена'
-     },
-    {
-     name: '7',
-      value: 'Скелетон - Включает плейлист видео игор Скелетона'
-     },
-    {
-     name: '8',
-      value: 'giveplay - Включает Рики Эстли'
-     },
-    {
-      name: '9',
-       value: 'bestmacintoshbest - Включает баянистый трек Macintosh (WARRING! 10 HOURS)'
-      },
-     {
-       name: 'ВНИМАНИЕ!',
-      value: 'Для того, чтобы трек включился, вам нужно будет быть в голосовой комнате Дарена, а уж потом вводить название трека'
-    }
-  ],
-  timestamp: new Date(),
-  footer: {
-    text: '© Bot by WPSTUDIO.'
-  }
-}});
-})
-
-client.on("message", message => {
-var input = message.content.toUpperCase();
-if (message.member.roles.exists('name', 'ban')) {
-    if (message.content === "Kick") {
-      var mention = message.mentions.users.size ? message.mentions.users.first() : null; if (mention != null)
-              var mentionMember = message.guild.members.find("id", mention.id)
-              var GuildMember = message.guild.members.find("id", mention.id)
-        GuildMember.kick();
-        console.log("Сервер: " + message.guild.name + " | Имя: " + mention.username + " | Кикнут" + " | By: " + message.author.username);
-    } else if (message.content === "ban") {
-              var mention = message.mentions.users.size ? message.mentions.users.first() : null; if (mention != null)
-              var mentionMember = message.guild.members.find("id", mention.id)
-              var GuildMember = message.guild.members.find("id", mention.id)
-              GuildMember.ban(7);
-console.log("Сервер: " + message.guild.name + " | Имя: " + mention.username + " | Забанен" + " | By: " + message.author.username);
-     }
-    }
-});
-
-client.on('message', message => {
-    if(message.content === "rules")
+    if(message.content === "Drules")
 message.channel.sendMessage("", {embed: {
   color: 3447003,
   author: {
@@ -251,7 +127,7 @@ message.channel.sendMessage("", {embed: {
     },
     {
       name: '2',
-      value: 'Пишите админам только по делу, если вы просто пишите всякую пургу нам, то сразу добавляем вас В ЧС, как и в группе, так и на наших страницах на месяц.'
+      value: 'Быть адекватным.'
     },
     {
       name: '3',
@@ -269,41 +145,34 @@ message.channel.sendMessage("", {embed: {
       name: '6',
       value: 'Нецензурная лексика разрешена для выражения эмоций, а не для оскорблений.'
      },
+     {
+      name: '7',
+      value: 'Картинки и все что связанно с NSFW контентом можно кидать ТОЛЬКО в комнату, созданную для этого(#pron).'
+    },
+    {
+    name: '8',
+      value: 'Не кидать картинки гуру содержания (расчлененка всякая, кишки наружу и все в таком духе.) '
+    },
+    
   ],
   timestamp: new Date(),
   footer: {
-    text: 'Правила были составлены и сделаны админами нашей конфы. Bot by WPSTUDIO'
+    text: 'Наказание за нарушение - на усмотрение администрации конфы. Bot by WPSTUDIO'
   }
 }});
 })
 
 
-// Здесь код потокового аудио Youtube на голосовой чат
+// Потоковое аудио Youtube на голосовой чат
 client.on('message', message => {
-  if (message.content.startsWith('Дарен')) {
-    const voiceChannel = message.member.voiceChannel;
-    if (!voiceChannel) {
-     return message.channel.sendMessage('');
-    }
-    voiceChannel.join()
-      .then(connnection => {
-        let stream = yt("https://www.youtube.com/watch?v=jQSfxITH7ws", {audioonly: true});
-        const dispatcher = connnection.playStream(stream);
-        dispatcher.on('end', () => {
-          voiceChannel.leave();
-         });
-      });
-  }
-});
-client.on('message', message => {
-  if (message.content.startsWith('macintosh')) {
+  if (message.content.startsWith('DPlay3')) {
     const voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
      return message.channel.sendMessage(``);
     }
     voiceChannel.join()
       .then(connnection => {
-        let stream = yt("https://www.youtube.com/watch?v=YcsYSJwewWk", {audioonly: true});
+        let stream = yt("https://www.youtube.com/watch?v=g7TMXNpr3Ps", {audioonly: true});
         const dispatcher = connnection.playStream(stream);
         dispatcher.on('end', () => {
           voiceChannel.leave();
@@ -313,7 +182,7 @@ client.on('message', message => {
 });
 
 client.on('message', message => {
-  if (message.content.startsWith('giveplay')) {
+  if (message.content.startsWith('DPlay4')) {
     const voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
       return message.channel.sendMessage(``);
@@ -329,7 +198,7 @@ client.on('message', message => {
   }
 });
 client.on('message', message => {
-  if (message.content.startsWith('tobiking')) {
+  if (message.content.startsWith('DPlay2')) {
     const voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
       return message.channel.sendMessage(``);
@@ -345,7 +214,7 @@ client.on('message', message => {
   }
 });
 client.on('message', message => {
-  if (message.content.startsWith('bestmacintoshbest')) {
+  if (message.content.startsWith('DPlay5')) {
     const voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
       return message.channel.sendMessage(``);
@@ -361,7 +230,7 @@ client.on('message', message => {
   }
 });
 client.on('message', message => {
-  if (message.content.startsWith('monstercat')) {
+  if (message.content.startsWith('DPlay1')) {
     const voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
       return message.channel.sendMessage(``);
@@ -376,15 +245,34 @@ client.on('message', message => {
       });
   }
 });
+
 client.on('message', message => {
-  if (message.content.startsWith('Дружков')) {
+    if (message.content.startsWith('DPlay ')) {
+    const voiceChannel = message.member.voiceChannel;
+    if (!voiceChannel) {
+      return message.channel.sendMessage("Запускаю ссылку...");
+    }
+    voiceChannel.join()
+      .then(connnection => {
+        let stream = yt(message.content.split(" ").slice(1).join(" "), {
+          audioonly: true
+        });
+        const dispatcher = connnection.playStream(stream);
+        dispatcher.on('end', () => {
+          voiceChannel.leave();
+       });
+      });
+  }
+});
+client.on('message', message => {
+  if (message.content.startsWith('DPlay6')) {
     const voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
       return message.channel.sendMessage(``);
     }
     voiceChannel.join()
       .then(connnection => {
-        let stream = yt("https://www.youtube.com/watch?v=OtKAYaoFkfY", {audioonly: true});
+        let stream = yt("https://www.youtube.com/watch?v=dGfdGZ8cH-o", {audioonly: true});
         const dispatcher = connnection.playStream(stream);
         dispatcher.on('end', () => {
           voiceChannel.leave();
@@ -392,27 +280,21 @@ client.on('message', message => {
       });
   }
 });
-client.on('message', message => {
-  if (message.content.startsWith('Скелетон')) {
-    const voiceChannel = message.member.voiceChannel;
-    if (!voiceChannel) {
-      return message.channel.sendMessage(``);
-    }
-    voiceChannel.join()
-      .then(connnection => {
-        let stream = yt("https://www.youtube.com/watch?v=jLw1lplPHMI&list=PLEVYFVjqfUJffKc4HUvN_BavsMQDdVBIX", {audioonly: true});
-        const dispatcher = connnection.playStream(stream);
-        dispatcher.on('end', () => {
-          voiceChannel.leave();
-         });
-      });
+
+// Токен --------------------------------------------------------------
+client.login('xxx'); // xxx - Ваш токен
+
+// Тестовые команды (Они в любом случаи могут быть сломаны)
+
+    module.exports = (bot) => {
+    client.on('message', message => {
+    if (message.content.startsWith('Test ')) {    
+    const embed = new Discord.RichEmbed()
+    const params = message.content.split(" ").slice(1);
+     embed.setColor(0x2885bd)
+        .addField('__**Yukin Stats**__', `**Uptime:** ${moment.duration(client.uptime).format('d[ days], h[ hours], m[ minutes, and ]s[ seconds]')}\n**Memory usage:** ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB\n**Ping:** ${client.ping}ms`)
+        .addField('__**Server Stats**__', `**Operating system:** ${os.platform()}\n**CPU:** ${os.cpus()[0].model}\n**Uptime:** ${moment.duration(os.uptime()).format('d[ days], h[ hours], m[ minutes, and ]s[ seconds]')}`);
+    message.channel.send({embed}); 
   }
-});
-
-
-  // ------------------------------------------------------------------
-  // Здесь тестовый функционал
-
-
-// --------------------------------------------------------------
-client.login('ваш индификатор');
+    })
+    }
