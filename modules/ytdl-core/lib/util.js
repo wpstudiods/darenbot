@@ -1,7 +1,12 @@
-var qs       = require('querystring');
-var url      = require('url');
-var Entities = require('html-entities').AllHtmlEntities;
-var FORMATS  = require('./formats');
+'use strict';
+
+const qs       = require('querystring');
+const url      = require('url');
+const Entities = require('html-entities').AllHtmlEntities;
+const FORMATS  = require('./formats');
+
+
+const VIDEO_URL = 'https://www.youtube.com/watch?v=';
 
 
 /**
@@ -11,7 +16,7 @@ var FORMATS  = require('./formats');
  * @return {Number}
  */
 var timeRegexp = /(?:(\d+)h)?(?:(\d+)m(?!s))?(?:(\d+)s)?(?:(\d+)(?:ms)?)?/;
-exports.parseTime = function(time) {
+exports.parseTime = (time) => {
   var result = timeRegexp.exec(time.toString());
   var hours  = result[1] || 0;
   var mins   = result[2] || 0;
@@ -46,7 +51,7 @@ var videoEncodingRanks = {
  * @param {Object} a
  * @param {Object} b
  */
-exports.sortFormats = function(a, b) {
+exports.sortFormats = (a, b) => {
   var ares = a.resolution ? parseInt(a.resolution.slice(0, -1), 10) : 0;
   var bres = b.resolution ? parseInt(b.resolution.slice(0, -1), 10) : 0;
   var afeats = ~~!!ares * 2 + ~~!!a.audioBitrate;
@@ -54,7 +59,7 @@ exports.sortFormats = function(a, b) {
 
   function getBitrate(c) {
     if (c.bitrate) {
-      var s = c.bitrate.split('-');
+      let s = c.bitrate.split('-');
       return parseFloat(s[s.length - 1], 10);
     } else {
       return 0;
@@ -69,14 +74,14 @@ exports.sortFormats = function(a, b) {
 
   if (afeats === bfeats) {
     if (ares === bres) {
-      var avbitrate = getBitrate(a);
-      var bvbitrate = getBitrate(b);
+      let avbitrate = getBitrate(a);
+      let bvbitrate = getBitrate(b);
       if (avbitrate === bvbitrate) {
-        var aascore = audioScore(a);
-        var bascore = audioScore(b);
+        let aascore = audioScore(a);
+        let bascore = audioScore(b);
         if (aascore === bascore) {
-          var avenc = videoEncodingRanks[a.encoding] || 0;
-          var bvenc = videoEncodingRanks[b.encoding] || 0;
+          let avenc = videoEncodingRanks[a.encoding] || 0;
+          let bvenc = videoEncodingRanks[b.encoding] || 0;
           return bvenc - avenc;
         } else {
           return bascore - aascore;
@@ -100,8 +105,7 @@ exports.sortFormats = function(a, b) {
  * @param {Object} options
  * @return {Object|Error}
  */
-exports.chooseFormat = function(formats, options) {
-
+exports.chooseFormat = (formats, options) => {
   if (typeof options.format === 'object') {
     return options.format;
   }
@@ -115,6 +119,10 @@ exports.chooseFormat = function(formats, options) {
 
   var format;
   var quality = options.quality || 'highest';
+  function getBitrate(f) {
+    let s = f.bitrate.split('-');
+    return parseFloat(s[s.length - 1], 10);
+  }
   switch (quality) {
     case 'highest':
       format = formats[0];
@@ -124,30 +132,43 @@ exports.chooseFormat = function(formats, options) {
       format = formats[formats.length - 1];
       break;
 
-    default:
-      var getFormat = function(itag) {
-        for (var i = 0, len = formats.length; i < len; i++) {
-          if (formats[i].itag === '' + itag) {
-            return formats[i];
-          }
-        }
-        return null;
+    case 'highestaudio':
+      formats = exports.filterFormats(formats, 'audio');
+      format = null;
+      for (let f of formats) {
+        if (!format
+          || f.audioBitrate > format.audioBitrate
+          || (f.audioBitrate === format.audioBitrate && format.encoding && !f.encoding))
+            format = f;
+      }
+      break;
+
+    case 'highestvideo':
+      formats = exports.filterFormats(formats, 'video');
+      format = null;
+      for (let f of formats) {
+        if (!format
+          || getBitrate(f) > getBitrate(format)
+          || (getBitrate(f) === getBitrate(format) && format.audioEncoding && !f.audioEncoding))
+            format = f;
+      }
+      break;
+
+    default: {
+      let getFormat = (itag) => {
+        return formats.find((format) => format.itag === '' + itag);
       };
       if (Array.isArray(quality)) {
-        for (var i = 0, len = quality.length; i < len; i++) {
-          format = getFormat(quality[i]);
-          if (format) { break; }
-        }
+        quality.find((q) => format = getFormat(q));
       } else {
         format = getFormat(quality);
       }
+    }
 
   }
 
   if (!format) {
     return new Error('No such format found: ' + quality);
-  } else if (format.rtmp) {
-    return new Error('rtmp protocol not supported');
   }
   return format;
 };
@@ -158,27 +179,35 @@ exports.chooseFormat = function(formats, options) {
  * @param {Function} filter
  * @return {Array.<Object>}
  */
-exports.filterFormats = function(formats, filter) {
+exports.filterFormats = (formats, filter) => {
   var fn;
   switch (filter) {
+    case 'audioandvideo':
+      fn = (format) => format.bitrate && format.audioBitrate;
+      break;
+
     case 'video':
-      fn = function(format) { return format.bitrate; };
+      fn = (format) => format.bitrate;
       break;
 
     case 'videoonly':
-      fn = function(format) { return format.bitrate && !format.audioBitrate; };
+      fn = (format) => format.bitrate && !format.audioBitrate;
       break;
 
     case 'audio':
-      fn = function(format) { return format.audioBitrate; };
+      fn = (format) => format.audioBitrate;
       break;
 
     case 'audioonly':
-      fn = function(format) { return !format.bitrate && format.audioBitrate; };
+      fn = (format) => !format.bitrate && format.audioBitrate;
       break;
 
     default:
-      fn = filter;
+      if (typeof filter === 'function') {
+        fn = filter;
+      } else {
+        throw new TypeError(`Given filter (${filter}) is not supported`);
+      }
   }
   return formats.filter(fn);
 };
@@ -192,7 +221,7 @@ exports.filterFormats = function(formats, filter) {
  * @param {String} right
  * @return {String}
  */
-exports.between = function(haystack, left, right) {
+exports.between = (haystack, left, right) => {
   var pos;
   pos = haystack.indexOf(left);
   if (pos === -1) { return ''; }
@@ -215,34 +244,73 @@ exports.between = function(haystack, left, right) {
  *  - http://www.youtube.com/embed/VIDEO_ID
  *
  * @param {String} link
- * @return {String}
+ * @return {String|Error}
  */
-var idRegex = /^[a-zA-Z0-9-_]{11}$/;
-exports.getVideoID = function(link) {
-  if (idRegex.test(link)) {
-    return link;
-  }
+exports.getURLVideoID = function(link) {
   var parsed = url.parse(link, true);
   var id = parsed.query.v;
   if (parsed.hostname === 'youtu.be' ||
-      (parsed.hostname === 'youtube.com' ||
-       parsed.hostname === 'www.youtube.com') && !id) {
+     (parsed.hostname === 'youtube.com' ||
+      parsed.hostname === 'www.youtube.com') && !id) {
     var s = parsed.pathname.split('/');
     id = s[s.length - 1];
   }
   if (!id) {
-    throw new Error('No video id found: ' + link);
+    return new Error('No video id found: ' + link);
+  }
+  id = id.substring(0, 11);
+  if (!exports.validateID(id)) {
+    return new TypeError(`Video id (${id}) does not match expected ` +
+      `format (${idRegex.toString()})`);
   }
   return id;
 };
 
 
 /**
+ * Gets video ID either from a url or by checking if the given string
+ * matches the video ID format.
+ *
+ * @param {String} str
+ * @return {String|Error}
+ */
+exports.getVideoID = (str) => {
+  if (exports.validateID(str)) {
+    return str;
+  } else {
+    return exports.getURLVideoID(str);
+  }
+};
+
+
+/**
+ * Returns true if given id satifies YouTube's id format.
+ *
+ * @param {String} id
+ * @return {Boolean}
+ */
+var idRegex = /^[a-zA-Z0-9-_]{11}$/;
+exports.validateID = (id) => {
+  return idRegex.test(id);
+};
+
+
+/**
+ * Checks wether the input string includes a valid id.
+ *
+ * @param {String} string
+ * @return {Boolean}
+ */
+exports.validateURL = (string) => {
+  return !(exports.getURLVideoID(string) instanceof Error);
+};
+
+
+/**
  * @param {Object} info
- * @param {Boolean} debug
  * @return {Array.<Object>}
  */
-exports.parseFormats = function(info, debug) {
+exports.parseFormats = (info) => {
   var formats = [];
   if (info.url_encoded_fmt_stream_map) {
     formats = formats
@@ -252,24 +320,42 @@ exports.parseFormats = function(info, debug) {
     formats = formats.concat(info.adaptive_fmts.split(','));
   }
 
-  formats = formats
-    .map(function(format) {
-      var data = qs.parse(format);
-      var meta = FORMATS[data.itag];
-      if (!meta && debug) {
-        console.warn('No format metadata for itag ' + data.itag + ' found');
-      }
-
-      for (var key in meta) {
-        data[key] = meta[key];
-      }
-
-      return data;
-    });
+  formats = formats.map((format) => qs.parse(format));
   delete info.url_encoded_fmt_stream_map;
   delete info.adaptive_fmts;
 
   return formats;
+};
+
+
+/**
+ * @param {Object} format
+ */
+exports.addFormatMeta = (format) => {
+  var meta = FORMATS[format.itag];
+  for (let key in meta) {
+    format[key] = meta[key];
+  }
+
+  if (/\/live\/1\//.test(format.url)) {
+    format.live = true;
+  }
+};
+
+
+/**
+ * Get only the string from an HTML string.
+ *
+ * @param {String} html
+ * @return {String}
+ */
+exports.stripHTML = (html) => {
+  return html
+    .replace(/\n/g, ' ')
+    .replace(/\s*<\s*br\s*\/?\s*>\s*/gi, '\n')
+    .replace(/<\s*\/\s*p\s*>\s*<\s*p[^>]*>/gi, '\n')
+    .replace(/<.*?>/gi, '')
+    .trim();
 };
 
 
@@ -279,14 +365,71 @@ exports.parseFormats = function(info, debug) {
  * @param {String} html
  * @return {String}
  */
-exports.getVideoDescription = function(html) {
+exports.getVideoDescription = (html) => {
   var regex = /<p.*?id="eow-description".*?>(.+?)<\/p>[\n\r\s]*?<\/div>/im;
   var description = html.match(regex);
-  return description ? new Entities().decode(description[1]
-    .replace(/\n/g, ' ')
-    .replace(/\s*<\s*br\s*\/?\s*>\s*/gi, '\n')
-    .replace(/<\s*\/\s*p\s*>\s*<\s*p[^>]*>/gi, '\n')
-    .replace(/<.*?>/gi, '')).trim() : '';
+  return description ?
+    new Entities().decode(exports.stripHTML(description[1])) : '';
+};
+
+
+/**
+ * Get video Owner from html.
+ *
+ * @param {String} body
+ * @return {Object}
+ */
+var authorRegexp = /<a href="\/channel\/([\w-]+)"[^>]+>(.+?(?=<\/a>))/;
+var aliasRegExp = /<a href="\/user\/([^"]+)/;
+exports.getAuthor = (body) => {
+  var ownerinfo = exports.between(body,
+    '<div id="watch7-user-header" class=" spf-link ">',
+    '<div id="watch8-action-buttons" class="watch-action-buttons clearfix">');
+  if (ownerinfo === '') {
+    return {};
+  }
+  ownerinfo = new Entities().decode(ownerinfo);
+  var channelMatch = ownerinfo.match(authorRegexp);
+  var userMatch = ownerinfo.match(aliasRegExp);
+  return {
+    id: channelMatch[1],
+    name: channelMatch[2],
+    avatar: url.resolve(VIDEO_URL, exports.between(ownerinfo,
+      'data-thumb="', '"')),
+    user: userMatch ? userMatch[1] : null,
+    channel_url: 'https://www.youtube.com/channel/' + channelMatch[1],
+    user_url: userMatch ? 'https://www.youtube.com/user/' + userMatch[1] : null,
+  };
+};
+
+
+/**
+ * Get video published at from html.
+ *
+ * @param {String} body
+ * @return {String}
+ */
+exports.getPublished = (body) => {
+  return Date.parse(exports.between(body,
+    '<meta itemprop="datePublished" content="', '">'));
+};
+
+
+/**
+ * Get video published at from html.
+ * Credits to https://github.com/paixaop.
+ *
+ * @param {String} body
+ * @return {Array.<Object>}
+ */
+exports.getRelatedVideos = (body) => {
+  var jsonStr = exports.between(body, '\'RELATED_PLAYER_ARGS\': {"rvs":', '},');
+  try {
+    jsonStr = JSON.parse(jsonStr);
+  } catch (err) {
+    return [];
+  }
+  return jsonStr.split(',').map((link) => qs.parse(link));
 };
 
 
@@ -294,7 +437,7 @@ exports.getVideoDescription = function(html) {
  * @param {Array.<Function>} funcs
  * @param {Function(!Error, Array.<Object>)} callback
  */
-exports.parallel = function(funcs, callback) {
+exports.parallel = (funcs, callback) => {
   var funcsDone = 0;
   var len = funcs.length;
   var errGiven = false;
@@ -314,9 +457,7 @@ exports.parallel = function(funcs, callback) {
   }
 
   if (len > 0) {
-    for (var i = 0; i < len; i++) {
-      funcs[i](checkDone.bind(null, i));
-    }
+    funcs.forEach((f, i) => { f(checkDone.bind(null, i)); });
   } else {
     callback(null, results);
   }
@@ -324,19 +465,37 @@ exports.parallel = function(funcs, callback) {
 
 
 /**
- * Deep assign object to another.
+ * Converts human friendly time to milliseconds. Supports the format
+ * 00:00:00.000 for hours, minutes, seconds, and milliseconds respectively.
+ * And 0ms, 0s, 0m, 0h, and together 1m1s.
  *
- * @param {Object} target
- * @param {Object} source
+ * @param {String|Number} time
+ * @return {Number}
  */
-exports.assignDeep = function(target, source) {
-  for (var key in source) {
-    if (typeof source[key] === 'object' && source[key] != null &&
-        target[key]) {
-      exports.assignDeep(target[key], source[key]);
-    } else {
-      target[key] = source[key];
+var numberFormat = /^\d+$/;
+var timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
+var timeUnits = {
+  ms: 1,
+  s: 1000,
+  m: 60000,
+  h: 3600000,
+};
+exports.fromHumanTime = (time) => {
+  if (typeof time === 'number') { return time; }
+  if (numberFormat.test(time)) { return +time; }
+  var firstFormat = timeFormat.exec(time);
+  if (firstFormat) {
+    return +(firstFormat[1] || 0) * timeUnits.h +
+      +(firstFormat[2] || 0) * timeUnits.m +
+      +firstFormat[3] * timeUnits.s +
+      +(firstFormat[4] || 0);
+  } else {
+    var total = 0;
+    var r = /(\d+)(ms|s|m|h)/g;
+    var rs;
+    while ((rs = r.exec(time)) != null) {
+      total += +rs[1] * timeUnits[rs[2]];
     }
+    return total;
   }
-  return target;
 };
